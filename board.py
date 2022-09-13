@@ -9,6 +9,7 @@ Implements a basic Go board with functions to:
 - play a move
 
 The board uses a 1-dimensional representation with padding
+**test
 """
 
 import numpy as np
