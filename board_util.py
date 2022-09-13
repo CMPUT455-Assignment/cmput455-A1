@@ -4,7 +4,6 @@ Utility functions for Go board.
 """
 
 import numpy as np
-import random
 from typing import List
 from board_base import GO_COLOR, GO_POINT, PASS
 from board import GoBoard
@@ -34,8 +33,7 @@ class GoBoardUtil(object):
         return legal_moves
 
     @staticmethod
-    def generate_random_move(board: GoBoard, color: GO_COLOR, 
-                             use_eye_filter: bool) -> GO_POINT:
+    def generate_random_move(board: GoBoard, color: GO_COLOR, use_eye_filter: bool) -> GO_POINT:
         """
         Generate a random move.
         Return PASS if no move found
@@ -50,9 +48,7 @@ class GoBoardUtil(object):
         moves: np.ndarray[GO_POINT] = board.get_empty_points()
         np.random.shuffle(moves)
         for move in moves:
-            legal: bool = not (
-                use_eye_filter and board.is_eye(move, color)
-            ) and board.is_legal(move, color)
+            legal: bool = not (use_eye_filter and board.is_eye(move, color)) and board.is_legal(move, color)
             if legal:
                 return move
         return PASS
