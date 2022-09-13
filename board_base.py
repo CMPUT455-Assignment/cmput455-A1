@@ -21,8 +21,10 @@ BORDER = GO_COLOR(3)
 def is_black_white(color: GO_COLOR) -> bool:
     return color == BLACK or color == WHITE
 
+
 def is_black_white_empty(color: GO_COLOR) -> bool:
     return color == BLACK or color == WHITE or color == EMPTY
+
 
 def opponent(color: GO_COLOR) -> GO_COLOR:
     return WHITE + BLACK - color

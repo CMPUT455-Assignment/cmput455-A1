@@ -33,16 +33,16 @@ from board_base import (
 )
 
 
-"""
-The GoBoard class implements a board and basic functions to play
-moves, check the end of the game, and count the acore at the end.
-The class also contains basic utility functions for writing a Go player.
-For many more utility functions, see the GoBoardUtil class in board_util.py.
-
-The board is stored as a one-dimensional array of GO_POINT in self.board.
-See coord_to_point for explanations of the array encoding.
-"""
 class GoBoard(object):
+    """
+    The GoBoard class implements a board and basic functions to play
+    moves, check the end of the game, and count the acore at the end.
+    The class also contains basic utility functions for writing a Go player.
+    For many more utility functions, see the GoBoardUtil class in board_util.py.
+
+    The board is stored as a one-dimensional array of GO_POINT in self.board.
+    See coord_to_point for explanations of the array encoding.
+    """
     def __init__(self, size: int):
         """
         Creates a Go board of given size
@@ -118,8 +118,8 @@ class GoBoard(object):
 
     def end_of_game(self) -> bool:
         return self.last_move == PASS \
-           and self.last2_move == PASS
-           
+               and self.last2_move == PASS
+
     def get_empty_points(self) -> np.ndarray:
         """
         Return:
@@ -141,7 +141,7 @@ class GoBoard(object):
         """
         for row in range(1, self.size + 1):
             start: int = self.row_start(row)
-            board_array[start : start + self.size] = EMPTY
+            board_array[start: start + self.size] = EMPTY
 
     def is_eye(self, point: GO_POINT, color: GO_COLOR) -> bool:
         """
