@@ -283,11 +283,30 @@ class GtpConnection:
     """
     def gogui_rules_final_result_cmd(self, args):
         """ Implement this function for Assignment 1 """
-        self.respond("unknown")
+        # if there exist legal move in board return unknow
+        # otherwise return opponent color
+        legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
+        if legal_moves:
+            self.respond("unknown")
+        elif self.board.current_player == BLACK:
+            self.respond("white")
+        elif self.board.current_player == WHITE:
+            self.respond("black") 
+
 
     def gogui_rules_legal_moves_cmd(self, args):
         """ Implement this function for Assignment 1 """
-        self.respond()
+        # return list of legal move points coords such as A1 A2 A3 B1 B2 B3 C1 C2 C3
+        legal_moves_list =[]
+        legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
+        for move in legal_moves:
+            move_coord = point_to_coord(move, self.board.size)
+            move_as_string = format_point(move_coord).upper()
+            legel_moves_list.append(move_as_string)
+
+        legel_moves_list.sort()
+        legel_moves_list =' '.join(legel_moves_list)    
+        self.respond(legal_moves_list)
         return
 
     def play_cmd(self, args: List[str]) -> None:
@@ -298,10 +317,12 @@ class GtpConnection:
             board_color = args[0].lower()
             board_move = args[1]
             color = color_to_int(board_color)
+            # NoGo Rules3 Passing is illegal
             if args[1].lower() == "pass":
-                self.board.play_move(PASS, color)
-                self.board.current_player = opponent(color)
-                self.respond()
+                self.respond("Illegal Move: \"{} {}\" wrong coordinate".format(board_color,board_move))
+                # self.board.play_move(PASS, color)
+                # self.board.current_player = opponent(color)
+                # self.respond()
                 return
             coord = move_to_coord(args[1], self.board.size)
             move = coord_to_point(coord[0], coord[1], self.board.size)

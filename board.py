@@ -35,8 +35,7 @@ from board_base import (
 
 class GoBoard(object):
     """
-    The GoBoard class implements a board and basic functions to play
-    moves, check the end of the game, and count the acore at the end.
+    The GoBoard class implements a board and basic functions to play moves, check the end of the game, and count the score at the end.
     The class also contains basic utility functions for writing a Go player.
     For many more utility functions, see the GoBoardUtil class in board_util.py.
 
@@ -92,8 +91,8 @@ class GoBoard(object):
         complicated cases such as suicide.
         """
         assert is_black_white(color)
-        if point == PASS:
-            return True
+        if point == PASS:        # * 出现PASS：返回illegal；
+            return False
         # Could just return False for out-of-bounds, 
         # but it is better to know if this is called with an illegal point
         assert self.pt(1, 1) <= point <= self.pt(self.size, self.size)
@@ -110,8 +109,8 @@ class GoBoard(object):
         This method tries to play the move on a temporary copy of the board.
         This prevents the board from being modified by the move
         """
-        if point == PASS:
-            return True
+        if point == PASS:        # * 出现PASS：返回illegal；
+            return False
         board_copy: GoBoard = self.copy()
         can_play_move = board_copy.play_move(point, color)
         return can_play_move
@@ -234,36 +233,43 @@ class GoBoard(object):
         """
         if not self._is_legal_check_simple_cases(point, color):
             return False
-        # Special cases
-        if point == PASS:
-            self.ko_recapture = NO_POINT
-            self.current_player = opponent(color)
-            self.last2_move = self.last_move
-            self.last_move = point
-            return True
 
-        # General case: deal with captures, suicide, and next ko point
+        # Ban PASS
+        if point == PASS:
+            return False        # * 出现PASS：返回illegal；
+
+        # # General case: deal with captures, suicide, and next ko point
         opp_color = opponent(color)
-        in_enemy_eye = self._is_surrounded(point, opp_color)
-        self.board[point] = color
-        single_captures = []
-        neighbors = self._neighbors(point)
+        in_enemy_eye = self._is_surrounded(point, opp_color)  # 判定NextMove是否为对方目；
+        self.board[point] = color       # 将NextMove预放入棋盘；
+
+        # Ban CAPTURE
+        neighbors = self._neighbors(point)      # 获取NextMove的十字邻点合集；
         for nb in neighbors:
-            if self.board[nb] == opp_color:
+            if self.board[nb] == opp_color:     # 若邻点为对方点，则检测是否存在CAPTURE情况；
                 single_capture = self._detect_and_process_capture(nb)
-                if single_capture != NO_POINT:
-                    single_captures.append(single_capture)
+                if single_capture != NO_POINT:      # * 出现CAPTURE：废除预设，标注illegal；
+                    self.board[point] = EMPTY
+                    return False
+
+        # Ban SUICIDE
         block = self._block_of(point)
-        if not self._has_liberty(block):  # undo suicide move
+        if not self._has_liberty(block):    # * 出现SUICIDE：废除预设，标注illegal；
             self.board[point] = EMPTY
             return False
+
+        # BAN EyeMove
         self.ko_recapture = NO_POINT
-        if in_enemy_eye and len(single_captures) == 1:
-            self.ko_recapture = single_captures[0]
+        if in_enemy_eye:
+            self.board[point] = EMPTY        # * 出现EyeMove：废除预设，标注illegal；
+            return False
+
+        # Other Legal Cases
         self.current_player = opponent(color)
         self.last2_move = self.last_move
         self.last_move = point
         return True
+
 
     def neighbors_of_color(self, point: GO_POINT, color: GO_COLOR) -> List:
         """ List of neighbors of point of given color """

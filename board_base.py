@@ -29,6 +29,7 @@ def is_black_white_empty(color: GO_COLOR) -> bool:
 def opponent(color: GO_COLOR) -> GO_COLOR:
     return WHITE + BLACK - color
 
+
 """
 A GO_POINT is a point on a Go board.
 It is encoded as a 32-bit integer, using the numpy type.
@@ -53,23 +54,24 @@ GtpConnection.format_point needs to be changed.
 MAXSIZE: int = 25
 DEFAULT_SIZE: int = 7
 
-"""
-The number of array elements in a "padded 1D" representation 
-of a size x size board.
-See the documentation under coord_to_point.
-"""
+
 def board_array_size(size: int) -> int:
+    """
+    The number of array elements in a "padded 1D" representation of a size x size board.
+    See the documentation under coord_to_point.
+    """
     return size * size + 3 * (size + 1)
 
-"""
-where1d: Helper function for using np.where with 1-d arrays.
-The result of np.where is a tuple which contains the indices 
-of elements that fulfill the condition.
-For 1-d arrays, this is of type Tuple[ndarray].
-The [0] indexing is needed to extract the ndarray result from the singleton tuple.
-"""
+
 def where1d(condition: np.ndarray) -> np.ndarray:
+    """
+    where1d: Helper function for using np.where with 1-d arrays.
+    The result of np.where is a tuple which contains the indices of elements that fulfill the condition.
+    For 1-d arrays, this is of type Tuple[ndarray].
+    The [0] indexing is needed to extract the ndarray result from the singleton tuple.
+    """
     return np.where(condition)[0]
+
 
 def coord_to_point(row: int, col: int, board_size: int) -> GO_POINT:
     """
@@ -114,4 +116,3 @@ def coord_to_point(row: int, col: int, board_size: int) -> GO_POINT:
     assert col <= board_size
     NS = board_size + 1
     return GO_POINT(NS * row + col)
-
