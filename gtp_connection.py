@@ -283,7 +283,7 @@ class GtpConnection:
     """
     def gogui_rules_final_result_cmd(self, args):
         """ Implement this function for Assignment 1 """
-        # if there exist legal move in board return unknow
+        # if there exist legal move in board, return unknow
         # otherwise return opponent color
         legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
         if legal_moves:
@@ -297,37 +297,53 @@ class GtpConnection:
     def gogui_rules_legal_moves_cmd(self, args):
         """ Implement this function for Assignment 1 """
         # return list of legal move points coords such as A1 A2 A3 B1 B2 B3 C1 C2 C3
+        
         legal_moves_list =[]
         legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
         for move in legal_moves:
             move_coord = point_to_coord(move, self.board.size)
             move_as_string = format_point(move_coord).upper()
-            legel_moves_list.append(move_as_string)
+            legal_moves_list.append(move_as_string)
 
-        legel_moves_list.sort()
-        legel_moves_list =' '.join(legel_moves_list)    
+        legal_moves_list.sort()
+        legal_moves_list =' '.join(legal_moves_list) 
+        # self.respond("legal move: {} : {}".format(self.board.current_player, legal_moves_list))
         self.respond(legal_moves_list)
         return
-
+        
+     
     def play_cmd(self, args: List[str]) -> None:
         """
         play a move args[1] for given color args[0] in {'b','w'}
         """
+
         try:
             board_color = args[0].lower()
+            # check illegal color entered
+            if board_color != 'b' and board_color != 'w':
+                self.respond("illegal move: wrong color")
+                return
             board_move = args[1]
             color = color_to_int(board_color)
-            # NoGo Rules3 Passing is illegal
+
+            # check the enter color match the current player
+            if color != self.board.current_player:
+                self.respond("illegal move: wrong color")
+
+            # NoGo Rules3 Passing is illegal    
             if args[1].lower() == "pass":
-                self.respond("Illegal Move: \"{} {}\" wrong coordinate".format(board_color,board_move))
+                self.respond("illegal move: \"{} {}\" wrong coordinate".format(board_color,board_move))
+                return
                 # self.board.play_move(PASS, color)
                 # self.board.current_player = opponent(color)
                 # self.respond()
-                return
+                # return
             coord = move_to_coord(args[1], self.board.size)
             move = coord_to_point(coord[0], coord[1], self.board.size)
-            if not self.board.play_move(move, color):
-                self.respond("Illegal Move: {}".format(board_move))
+
+            boardReturn = self.board.play_move(move, color)
+            if not boardReturn[0]:
+                self.respond(f"illegal move: \"{board_color} {board_move}\" {boardReturn[1]}")
                 return
             else:
                 self.debug_msg(
@@ -341,21 +357,22 @@ class GtpConnection:
         """ generate a move for color args[0] in {'b','w'} """
         board_color = args[0].lower()
         color = color_to_int(board_color)
+
         move = self.go_engine.get_move(self.board, color)
         move_coord = point_to_coord(move, self.board.size)
         move_as_string = format_point(move_coord)
         if self.board.is_legal(move, color):
             self.board.play_move(move, color)
             self.respond(move_as_string)
+            self.board.current_player = opponent(color)
         else:
-            self.respond("Illegal move: {}".format(move_as_string))
+            self.respond("resign")
 
     """
     ==========================================================================
     Assignment 1 - game-specific commands end here
     ==========================================================================
     """
-
 def point_to_coord(point: GO_POINT, boardsize: int) -> Tuple[int, int]:
     """
     Transform point given as board array index 
