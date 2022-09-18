@@ -231,6 +231,9 @@ class GoBoard(object):
         Play a move of color on point
         Returns whether move was legal
         """
+        if self.board[point] != EMPTY:
+            return [False, "occupied"]
+
         if not self._is_legal_check_simple_cases(point, color):
             return [False, "simpleError"]
 
