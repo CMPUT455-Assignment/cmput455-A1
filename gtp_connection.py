@@ -340,12 +340,17 @@ class GtpConnection:
                 # self.respond()
                 # return
             coord = move_to_coord(args[1], self.board.size)
-            move = coord_to_point(coord[0], coord[1], self.board.size)
+            move = coord_to_point(coord[0], coord[1], self.board.size)    
+            # check occupied 
+            if not self.board.play_move(move, color)[0]:
+                self.respond("illegal move: {} is occupied".format(board_move))
+                return 
+            
 
-            boardReturn = self.board.play_move(move, color)
-            if not boardReturn[0]:
-                self.respond(f"illegal move: \"{board_color} {board_move}\" {boardReturn[1]}")
-                return
+            # boardReturn = self.board.play_move(move, color)
+            # if not boardReturn[0]:
+            #     self.respond("illegal move: \"{} {}\" {}".format(board_color, board_move, boardReturn[1]))
+            #     return
             else:
                 self.debug_msg(
                     "Move: {}\nBoard:\n{}\n".format(board_move, self.board2d())
