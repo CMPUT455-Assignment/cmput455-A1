@@ -341,6 +341,7 @@ class GtpConnection:
             coord = move_to_coord(args[1], self.board.size)
             move = coord_to_point(coord[0], coord[1], self.board.size)
 
+            # check illegal suicide occupited capture
             boardReturn = self.board.play_move(move, color)
             if not boardReturn[0]:
                 self.respond(f"illegal move: \"{board_color} {board_move}\" {boardReturn[1]}")
