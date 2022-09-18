@@ -329,6 +329,7 @@ class GtpConnection:
             # check the enter color match the current player
             if color != self.board.current_player:
                 self.respond("illegal move: wrong color")
+                return
 
             # NoGo Rules3 Passing is illegal    
             if args[1].lower() == "pass":
